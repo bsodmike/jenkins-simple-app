@@ -31,7 +31,23 @@ node("docker") {
       stage('Build') {
         sh 'mvn clean package -Dmaven.test.skip=true'
         archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-        stash name: 'docker', includes: 'src/main/docker/Dockerfile'
+        stash name: 'docker', includes: 'src/main/docker/Dockerfile, , target/*.jar'
+      }
+    }
+  }
+
+  stage('Tests') {
+    parallel 'Unit tests': {
+      tools.inside {
+        checkout scm
+        sh 'mvn clean test'
+        junit 'target/surefire-reports/*.xml'
+      }
+    }, 'Integration tests': {
+      tools.inside {
+        checkout scm
+        sh 'mvn clean test-compile failsafe:integration-test'
+        junit 'target/failsafe-reports/*.xml'
       }
     }
   }
@@ -40,6 +56,18 @@ node("docker") {
     node("docker") {
       unstash 'docker'
       image = docker.build("inertialbox/simple-app:${short_commit}", '-f src/main/docker/Dockerfile .')
+    }
+  }
+
+  stage('Validate Docker img') {
+    node {
+      container = image.run('-P')
+      ip = container.port(8080)
+    }
+    try {
+      input message: "Is http://${ip} ok?", ok: 'Publish'
+    } finally {
+      node { container.stop() }
     }
   }
 }
