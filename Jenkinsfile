@@ -36,22 +36,6 @@ node("docker") {
     }
   }
 
-  stage('Tests') {
-    parallel 'Unit tests': {
-      tools.inside {
-        checkout scm
-        sh 'mvn clean test'
-        junit 'target/surefire-reports/*.xml'
-      }
-    }, 'Integration tests': {
-      tools.inside {
-        checkout scm
-        sh 'mvn clean test-compile failsafe:integration-test'
-        junit 'target/failsafe-reports/*.xml'
-      }
-    }
-  }
-
   stage('Build Docker img') {
     node("docker") {
       unstash 'docker'
