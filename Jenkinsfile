@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-  [$class: 'GithubProjectProperty', displayName: 'Simple Application', projectUrlStr: 'https://github.com/alecharp/simple-app/'],
+  [$class: 'GithubProjectProperty', displayName: 'Simple Application', projectUrlStr: 'https://github.com/bsodmike/jenkins-simple-app/'],
   buildDiscarder(logRotator(artifactNumToKeepStr: '5', daysToKeepStr: '15'))
 ])
 
@@ -55,7 +55,7 @@ stage('Validate Docker img') {
 }
 
 stage('Publish Docker img') {
-  node {
+  node("docker") {
     docker.withRegistry('http://localhost:5000') {
       image.push "${short_commit}"
       milestone label: 'docker-push-latest'
