@@ -44,14 +44,14 @@ node("docker") {
   }
 
   stage('Validate Docker img') {
-    node {
+    node("docker") {
       container = image.run('-P')
       ip = container.port(8080)
     }
     try {
       input message: "Is http://${ip} ok?", ok: 'Publish'
     } finally {
-      node { container.stop() }
+      node("docker") { container.stop() }
     }
   }
 }
