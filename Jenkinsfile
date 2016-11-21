@@ -42,16 +42,4 @@ node("docker") {
       image = docker.build("inertialbox/simple-app:${short_commit}", '-f src/main/docker/Dockerfile .')
     }
   }
-
-  stage('Validate Docker img') {
-    node("docker") {
-      container = image.run('-P')
-      ip = container.port(8080)
-    }
-    try {
-      input message: "Is http://${ip} ok?", ok: 'Publish'
-    } finally {
-      node("docker") { container.stop() }
-    }
-  }
 }
