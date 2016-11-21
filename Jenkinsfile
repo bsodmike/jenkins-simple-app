@@ -37,9 +37,7 @@ node("docker") {
   }
 
   stage('Build Docker img') {
-    node("docker") {
-      unstash 'docker'
-      image = docker.build("inertialbox/simple-app:${short_commit}", '-f src/main/docker/Dockerfile .')
-    }
+    unstash 'docker'
+    image = docker.build("inertialbox/simple-app:${short_commit}", '-f src/main/docker/Dockerfile .')
   }
 }
