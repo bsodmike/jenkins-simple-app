@@ -15,7 +15,7 @@ node("docker") {
     sh 'id -u'
 
     sh 'echo GID for docker group:'
-    sh 'cut -d: -f3 < <(getent group docker)'
+    sh 'getent group docker'
   }
 
   // stage('Prep Build Tools img') {
