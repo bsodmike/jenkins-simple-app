@@ -16,6 +16,9 @@ node("docker") {
 
     sh 'echo GID for docker group:'
     sh 'getent group docker'
+
+    sh 'echo Current groups:'
+    sh 'groups'
   }
 
   stage('Prep Build Tools img') {
@@ -46,7 +49,7 @@ node("docker") {
       }
     }
   }
-  
+
   // stage('Build Docker img') {
   //   unstash 'docker'
   //   image = docker.build("inertialbox/simple-app:${short_commit}", '-f src/main/docker/Dockerfile .')
